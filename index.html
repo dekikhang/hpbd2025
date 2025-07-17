@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chúc Mừng Sinh Nhật!</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        .background-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .heart {
+            position: absolute;
+            color: #ff69b4;
+            font-size: 20px;
+            animation: float 6s infinite ease-in-out;
+            opacity: 0.8;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(100vh) rotate(0deg); }
+            50% { transform: translateY(-10vh) rotate(180deg); }
+        }
+
+        .firework {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            animation: explode 2s infinite;
+        }
+
+        @keyframes explode {
+            0% { transform: scale(0); opacity: 1; }
+            50% { transform: scale(1); opacity: 0.8; }
+            100% { transform: scale(0); opacity: 0; }
+        }
+
+        .card-container {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .birthday-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 30px;
+            padding: 50px;
+            text-align: center;
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            max-width: 600px;
+            width: 100%;
+            transform: scale(0.8);
+            animation: cardAppear 1s ease-out forwards;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .birthday-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        @keyframes cardAppear {
+            to { transform: scale(1); }
+        }
+
+        .profile-image {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 6px solid rgba(255, 105, 180, 0.8);
+            margin-bottom: 30px;
+            animation: pulse 2s infinite;
+            box-shadow: 
+                0 15px 30px rgba(255, 105, 180, 0.3),
+                0 0 0 4px rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .profile-image:hover {
+            transform: scale(1.05);
+            box-shadow: 
+                0 20px 40px rgba(255, 105, 180, 0.4),
+                0 0 0 6px rgba(255, 255, 255, 0.2);
+        }
+
+        .birthday-cake {
+            width: 200px;
+            height: 200px;
+            margin: 20px auto 30px;
+            border-radius: 15px;
+            box-shadow: 
+                0 15px 30px rgba(255, 193, 7, 0.3),
+                0 0 0 4px rgba(255, 255, 255, 0.1);
+            animation: cakeFloat 3s ease-in-out infinite;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            object-fit: contain;
+            border: 3px solid rgba(255, 193, 7, 0.6);
+        }
+
+        .birthday-cake:hover {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 
+                0 20px 40px rgba(255, 193, 7, 0.4),
+                0 0 0 6px rgba(255, 255, 255, 0.2);
+        }
+
+        @keyframes cakeFloat {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            25% { transform: translateY(-10px) rotate(2deg); }
+            50% { transform: translateY(-5px) rotate(0deg); }
+            75% { transform: translateY(-8px) rotate(-2deg); }
+        }
+
+        .image-viewer {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .viewer-container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 90%;
+            max-height: 90%;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .viewer-title {
+            display: none;
+        }
+
+        .main-image-container {
+            position: relative;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .main-image {
+            max-width: 600px;
+            max-height: 400px;
+            width: auto;
+            height: auto;
+            border-radius: 15px;
+            object-fit: contain;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .main-video {
+            max-width: 600px;
+            max-height: 400px;
+            width: auto;
+            height: auto;
+            border-radius: 15px;
+            object-fit: contain;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .nav-button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            font-size: 24px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .nav-button.prev {
+            left: -70px;
+        }
+
+        .nav-button.next {
+            right: -70px;
+        }
+
+        .thumbnail-strip {
+            display: none;
+        }
+
+        .thumbnail {
+            width: 80px;
+            height: 80px;
+            border-radius: 10px;
+            object-fit: cover;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .thumbnail:hover {
+            border-color: #ff69b4;
+            transform: scale(1.1);
+        }
+
+        .thumbnail.active {
+            border-color: #4ecdc4;
+            box-shadow: 0 0 15px rgba(78, 205, 196, 0.5);
+        }
+
+        .viewer-info {
+            display: none;
+        }
+
+        .viewer-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .birthday-title {
+            font-size: 3em;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #feca57, #ff9ff3);
+            background-size: 400% 400%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 4s ease infinite;
+            margin-bottom: 30px;
+            font-weight: bold;
+            text-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .birthday-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            border-radius: 2px;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .name {
+            font-size: 2.2em;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 15px;
+            font-weight: bold;
+            text-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .birth-year {
+            font-size: 1.4em;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 30px;
+            font-weight: 500;
+        }
+
+        .message {
+            font-size: 1.2em;
+            color: rgba(255, 255, 255, 0.85);
+            line-height: 1.8;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            font-weight: 400;
+        }
+
+        .edit-form {
+            display: none;
+            margin-bottom: 20px;
+        }
+
+        .edit-form input {
+            margin: 10px;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 
+                0 8px 20px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 
+                0 12px 25px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+        }
+
+        .btn-gallery {
+            background: linear-gradient(45deg, #9b59b6, #3498db);
+        }
+
+        .btn-effects {
+            background: linear-gradient(45deg, #f39c12, #e74c3c);
+        }
+
+        .sparkle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #ffd700;
+            border-radius: 50%;
+            animation: sparkle 1s infinite;
+        }
+
+        @keyframes sparkle {
+            0%, 100% { opacity: 0; transform: scale(0); }
+            50% { opacity: 1; transform: scale(1); }
+        }
+
+        .music-note {
+            position: absolute;
+            font-size: 20px;
+            color: #9b59b6;
+            animation: musicFloat 4s infinite ease-in-out;
+        }
+
+        @keyframes musicFloat {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            25% { transform: translateY(-20px) rotate(10deg); }
+            75% { transform: translateY(-10px) rotate(-10deg); }
+        }
+
+        .confetti {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: #ff6b6b;
+            animation: confettiFall 3s infinite linear;
+        }
+
+        @keyframes confettiFall {
+            0% { transform: translateY(-100vh) rotate(0deg); }
+            100% { transform: translateY(100vh) rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Thêm audio phát tự động -->
+    <audio id="birthdayMusic" src="hpbd.mp3" autoplay loop hidden></audio>
+    
+    <div class="background-animation" id="backgroundAnimation"></div>
+    
+    <div class="card-container">
+        <div class="birthday-card">
+            <img src="img7.jpg" alt="Profile Image" class="profile-image" id="profileImage">
+            
+            <h1 class="birthday-title">🎉 Chúc Mừng Sinh Nhật! 🎉</h1>
+            
+            <div class="name" id="displayName">Nguyễn Thục Hiền</div>
+            <div class="birth-year" id="displayBirthYear">20/07/1999</div>
+            
+            <div class="message">
+                🌟Chúc mừng sinh nhật em yêu của anh! 🎉🌟<br>
+                Hôm nay là ngày đặc biệt nhất, ngày em đến với thế giới này. 💓<br>
+                Cảm ơn em vì đã là ánh sáng trong cuộc đời anh, luôn bên anh qua những khoảnh khắc vui buồn. 🤗<br>
+                Mong rằng tuổi mới sẽ mang đến cho em thêm nhiều niềm vui, thành công và những kỷ niệm đẹp ở bên anh hehee! 🌹🌹🌹🌹🌹<br>
+                🎂 Happy Birthday! 🎂 <br>
+                💖 Yêu em nhiều lắm! 💖
+            </div>
+            
+            <img src="cake.gif" alt="Birthday Cake" class="birthday-cake" id="birthdayCake" onclick="celebrateCake()">
+            
+            <div class="edit-form" id="editForm">
+                <input type="text" id="nameInput" placeholder="Nhập tên" value="Nguyễn Thục Hiền">
+                <input type="date" id="birthDateInput" value="1999-07-20">
+                <br>
+                <button class="btn" onclick="saveInfo()">💾 Lưu thông tin</button>
+                <button class="btn" onclick="toggleEdit()">❌ Hủy</button>
+            </div>
+            
+            <div style="margin-top: 20px;">
+                <button class="btn btn-gallery" onclick="openImageViewer()">📷 Nhấp vào đây để thấy bất ngờ</button>
+                <button class="btn btn-effects" onclick="addMoreEffects()">🎆 Thêm hiệu ứng</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="image-viewer" id="imageViewer">
+        <div class="viewer-container">
+            <div class="viewer-title"></div>
+            
+            <div class="main-image-container" id="mainMediaContainer">
+                <button class="nav-button prev" onclick="previousImage()">❮</button>
+                <img src="" alt="Main Image" class="main-image" id="mainImage" style="display: none;">
+                <video class="main-video" id="mainVideo" controls style="display: none;"></video>
+                <button class="nav-button next" onclick="nextImage()">❯</button>
+            </div>
+            
+            <div class="viewer-info" id="viewerInfo"></div>
+            
+            <div class="thumbnail-strip" id="thumbnailStrip"></div>
+            
+            <div class="viewer-buttons">
+                <button class="btn" onclick="closeImageViewer()">Quay lại</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentName = "Nguyễn Thục Hiền";
+        let currentBirthDate = "1999-07-20";
+        let currentImageUrl = "img7.jpg"; // Đã thay đổi thành img7
+        let currentImageIndex = 0;
+        
+        const availableMedia = [
+            { type: 'image', src: 'img1.jpg' },
+            { type: 'image', src: 'img2.jpg' },
+            { type: 'image', src: 'img3.jpg' },
+            { type: 'image', src: 'img4.jpg' },
+            { type: 'image', src: 'img4.1.jpg' },
+            { type: 'image', src: 'img5.jpg' },
+            { type: 'image', src: 'img6.jpg' }, 
+            { type: 'video', src: 'video1.mp4' }
+        ];
+
+        function formatBirthDate(dateString) {
+            const date = new Date(dateString);
+            const day = date.getDate().toString().padStart(2, '0');
+            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}/${month}/${year}`;
+        }
+
+        function updateDisplay() {
+            document.getElementById('displayName').textContent = currentName;
+            document.getElementById('displayBirthYear').textContent = `${formatBirthDate(currentBirthDate)}`;
+            document.getElementById('profileImage').src = currentImageUrl;
+        }
+
+        function celebrateCake() {
+            const background = document.getElementById('backgroundAnimation');
+            
+            for (let i = 0; i < 15; i++) {
+                setTimeout(() => {
+                    background.appendChild(createFirework());
+                }, i * 100);
+            }
+            
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    background.appendChild(createConfetti());
+                }, i * 50);
+            }
+            
+            for (let i = 0; i < 10; i++) {
+                setTimeout(() => {
+                    background.appendChild(createSparkle());
+                }, i * 150);
+            }
+            
+            const cake = document.getElementById('birthdayCake');
+            cake.style.animation = 'none';
+            setTimeout(() => {
+                cake.style.animation = 'cakeFloat 3s ease-in-out infinite';
+            }, 100);
+        }
+
+        function openImageViewer() {
+            const viewer = document.getElementById('imageViewer');
+            populateViewer();
+            showMedia(currentImageIndex);
+            viewer.style.display = 'flex';
+        }
+
+        function populateViewer() {
+            // No thumbnails will be populated since thumbnail-strip is hidden
+        }
+
+        function showMedia(index) {
+            if (index < 0) index = availableMedia.length - 1;
+            if (index >= availableMedia.length) index = 0;
+            
+            currentImageIndex = index;
+            const mainImage = document.getElementById('mainImage');
+            const mainVideo = document.getElementById('mainVideo');
+            
+            const media = availableMedia[index];
+            if (media.type === 'image') {
+                mainImage.src = media.src;
+                mainImage.style.display = 'block';
+                mainVideo.style.display = 'none';
+                mainVideo.pause();
+            } else if (media.type === 'video') {
+                mainVideo.src = media.src;
+                mainVideo.style.display = 'block';
+                mainImage.style.display = 'none';
+            }
+        }
+
+        function previousImage() {
+            showMedia(currentImageIndex - 1);
+        }
+
+        function nextImage() {
+            showMedia(currentImageIndex + 1);
+        }
+
+        function setAsProfileImage() {
+            const media = availableMedia[currentImageIndex];
+            if (media.type === 'image') {
+                currentImageUrl = media.src;
+                updateDisplay();
+            }
+            closeImageViewer();
+            
+            for (let i = 0; i < 10; i++) {
+                setTimeout(() => {
+                    document.getElementById('backgroundAnimation').appendChild(createSparkle());
+                }, i * 100);
+            }
+        }
+
+        function closeImageViewer() {
+            document.getElementById('imageViewer').style.display = 'none';
+            const mainVideo = document.getElementById('mainVideo');
+            mainVideo.pause();
+        }
+
+        document.addEventListener('keydown', function(e) {
+            const viewer = document.getElementById('imageViewer');
+            if (viewer.style.display === 'flex') {
+                if (e.key === 'ArrowLeft') previousImage();
+                if (e.key === 'ArrowRight') nextImage();
+                if (e.key === 'Escape') closeImageViewer();
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    setAsProfileImage();
+                }
+            }
+        });
+
+        function toggleEdit() {
+            const form = document.getElementById('editForm');
+            const btn = document.getElementById('editBtn');
+            
+            if (form.style.display === 'none' || form.style.display === '') {
+                form.style.display = 'block';
+                btn.textContent = '❌ Hủy chỉnh sửa';
+                document.getElementById('nameInput').value = currentName;
+                document.getElementById('birthDateInput').value = currentBirthDate;
+            } else {
+                form.style.display = 'none';
+                btn.textContent = '✏️ Chỉnh sửa thông tin';
+            }
+        }
+
+        function saveInfo() {
+            const nameInput = document.getElementById('nameInput').value.trim();
+            const birthDateInput = document.getElementById('birthDateInput').value;
+            
+            if (nameInput) currentName = nameInput;
+            if (birthDateInput) currentBirthDate = birthDateInput;
+            
+            updateDisplay();
+            toggleEdit();
+            
+            for (let i = 0; i < 8; i++) {
+                setTimeout(() => {
+                    document.getElementById('backgroundAnimation').appendChild(createFirework());
+                }, i * 200);
+            }
+        }
+
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.className = 'heart';
+            heart.innerHTML = '❤️';
+            heart.style.left = Math.random() * 100 + '%';
+            heart.style.animationDelay = Math.random() * 2 + 's';
+            heart.style.animationDuration = (4 + Math.random() * 4) + 's';
+            return heart;
+        }
+
+        function createFirework() {
+            const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57', '#ff9ff3'];
+            const firework = document.createElement('div');
+            firework.className = 'firework';
+            firework.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            firework.style.left = Math.random() * 100 + '%';
+            firework.style.top = Math.random() * 100 + '%';
+            firework.style.animationDelay = Math.random() * 2 + 's';
+            return firework;
+        }
+
+        function createSparkle() {
+            const sparkle = document.createElement('div');
+            sparkle.className = 'sparkle';
+            sparkle.style.left = Math.random() * 100 + '%';
+            sparkle.style.top = Math.random() * 100 + '%';
+            return sparkle;
+        }
+
+        function createMusicNote() {
+            const notes = ['♪', '♫', '♬', '♩'];
+            const musicNote = document.createElement('div');
+            musicNote.className = 'music-note';
+            musicNote.innerHTML = notes[Math.floor(Math.random() * notes.length)];
+            musicNote.style.left = Math.random() * 100 + '%';
+            musicNote.style.top = Math.random() * 100 + '%';
+            return musicNote;
+        }
+
+        function createConfetti() {
+            const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57', '#ff9ff3'];
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti';
+            confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            confetti.style.left = Math.random() * 100 + '%';
+            confetti.style.animationDelay = Math.random() * 3 + 's';
+            return confetti;
+        }
+
+        function addMoreEffects() {
+            const background = document.getElementById('backgroundAnimation');
+            
+            for (let i = 0; i < 5; i++) {
+                background.appendChild(createHeart());
+            }
+            
+            for (let i = 0; i < 8; i++) {
+                background.appendChild(createFirework());
+            }
+            
+            for (let i = 0; i < 10; i++) {
+                background.appendChild(createSparkle());
+            }
+            
+            for (let i = 0; i < 15; i++) {
+                background.appendChild(createConfetti());
+            }
+        }
+
+        function initializeEffects() {
+            const background = document.getElementById('backgroundAnimation');
+            
+            for (let i = 0; i < 8; i++) {
+                background.appendChild(createHeart());
+            }
+            
+            for (let i = 0; i < 12; i++) {
+                background.appendChild(createFirework());
+            }
+            
+            for (let i = 0; i < 6; i++) {
+                background.appendChild(createMusicNote());
+            }
+            
+            for (let i = 0; i < 10; i++) {
+                background.appendChild(createConfetti());
+            }
+        }
+
+        window.addEventListener('load', function() {
+            initializeEffects();
+            updateDisplay();
+            
+            setInterval(() => {
+                const background = document.getElementById('backgroundAnimation');
+                if (background.children.length > 100) {
+                    for (let i = 0; i < 20; i++) {
+                        if (background.firstChild) {
+                            background.removeChild(background.firstChild);
+                        }
+                    }
+                }
+                
+                background.appendChild(createHeart());
+                background.appendChild(createFirework());
+                if (Math.random() > 0.7) background.appendChild(createConfetti());
+            }, 2000);
+        });
+
+        document.querySelector('.birthday-card').addEventListener('click', function(e) {
+            if (e.target.tagName !== 'BUTTON' && e.target.tagName !== 'INPUT') {
+                for (let i = 0; i < 5; i++) {
+                    setTimeout(() => {
+                        document.getElementById('backgroundAnimation').appendChild(createSparkle());
+                    }, i * 100);
+                }
+            }
+        });
+
+        // Thêm đoạn này để phát nhạc khi người dùng click/touch lần đầu
+        function playMusicOnce() {
+            const music = document.getElementById('birthdayMusic');
+            if (music) {
+                music.play();
+            }
+            document.removeEventListener('click', playMusicOnce);
+            document.removeEventListener('touchstart', playMusicOnce);
+        }
+        document.addEventListener('click', playMusicOnce);
+        document.addEventListener('touchstart', playMusicOnce);
+    </script>
+</body>
+</html>
